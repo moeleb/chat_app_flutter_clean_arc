@@ -1,28 +1,30 @@
 import 'package:chatapp/core/theme/theme.dart';
+import 'package:chatapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:chatapp/features/auth/presentation/bloc/auth_event.dart';
+import 'package:chatapp/features/auth/presentation/bloc/auth_state.dart';
 import 'package:chatapp/features/auth/presentation/widget/auth_button.dart';
 import 'package:chatapp/features/auth/presentation/widget/auth_input_field.dart';
 import 'package:chatapp/features/auth/presentation/widget/login_prompt.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'features/auth/presentation/bloc/auth_bloc.dart';
-import 'features/auth/presentation/bloc/auth_state.dart';
-
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _onLogin() {
+
+  void _onRegister() {
     BlocProvider.of<AuthBloc>(context).add(
-      LoginEvent(
+      RegisterEvent(
+        username: _usernameController.text,
         email: _emailController.text,
         password: _passwordController.text,
       ),
@@ -41,20 +43,24 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             AuthInputField(
                 icon: Icons.person,
-                controller: _emailController,
-                hint: 'Email'),
+                controller: _usernameController,
+                hint: 'Username'),
             SizedBox(
               height: 20,
             ),
             AuthInputField(
-              icon: Icons.lock,
-              controller: _passwordController,
-              hint: 'Password',
-              isPassword: true,
+                icon: Icons.email, controller: _emailController, hint: 'Email'),
+            SizedBox(
+              height: 20,
             ),
+            AuthInputField(
+                icon: Icons.lock,
+                controller: _passwordController,
+                hint: 'Password',
+                isPassword: true),
             BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
               if (state is AuthSuccess) {
-                print("go the the main page soon");
+                Navigator.pushNamed(context, '/login');
               } else if (state is AuthFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -70,20 +76,16 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(
               height: 20,
             ),
-            AuthButton(
-              text: 'Login',
-              onPressed: _onLogin,
-            ),
+            AuthButton(text: "Register", onPressed: _onRegister),
             SizedBox(
               height: 15,
             ),
             LoginPrompt(
-              title: "Don't have an account?",
-              subTitle: "Click here to sign up",
-              onTap: () {
-                Navigator.pushNamed(context, "/register");
-              },
-            ),
+                title: "Already Have an account?",
+                subTitle: "Click here to login",
+                onTap: () {
+                  Navigator.pushNamed(context, "/login");
+                })
           ],
         ),
       ),

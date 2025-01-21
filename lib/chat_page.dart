@@ -1,8 +1,28 @@
 import 'package:chatapp/core/theme/theme.dart';
+import 'package:chatapp/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:chatapp/features/chat/presentation/bloc/chat_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ChatPage extends StatelessWidget {
-  const ChatPage({super.key});
+class ChatPage extends StatefulWidget {
+  final String conversationId;
+
+  const ChatPage({super.key, required this.conversationId});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _messageController = TextEditingController();
+  final _Storage = FlutterSecureStorage();
+  
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<ChatBloc>(context).add(LoadMessagesEvent(widget.conversationId));
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -5,8 +5,14 @@ import 'package:chatapp/features/auth/data/repositories/auth_repository_impl.dar
 import 'package:chatapp/features/auth/domain/usecase/login_use_case.dart';
 import 'package:chatapp/features/auth/domain/usecase/register_use_case.dart';
 import 'package:chatapp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:chatapp/login_page.dart';
-import 'package:chatapp/register_page.dart';
+import 'package:chatapp/features/auth/presentation/pages/login_page.dart';
+import 'package:chatapp/features/auth/presentation/pages/register_page.dart';
+import 'package:chatapp/features/conversation/data/datasource/remotedatasource/conversation_remote_data_soruce.dart';
+import 'package:chatapp/features/conversation/data/repositories/conversation_repository.dart';
+import 'package:chatapp/features/conversation/domain/usecases/fetch_conversation_use_case.dart';
+import 'package:chatapp/features/conversation/presentation/bloc/conversation_bloc.dart';
+import 'package:chatapp/features/conversation/presentation/bloc/conversation_event.dart';
+import 'package:chatapp/features/conversation/presentation/pages/conversation_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,9 +21,14 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -35,7 +46,13 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-        )
+        ),
+        BlocProvider(
+          create: (_) => ConversationBloc(
+              fetchConversationUseCase: FetchConversationUseCase(
+                  ConversationRepositoryImpl(
+                      remoteDataSource: ConversationRemoteDataSource()))),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -45,7 +62,8 @@ class MyApp extends StatelessWidget {
         routes: {
           '/login': (_) => const LoginPage(),
           '/register': (_) => const RegisterPage(),
-          '/chat': (_) => const ChatPage(),
+          '/chatPage': (_) => const ChatPage(),
+          '/conversationPage': (_) => const ConversationPage(),
         },
       ),
     );
